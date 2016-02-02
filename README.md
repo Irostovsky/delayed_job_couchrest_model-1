@@ -1,3 +1,5 @@
+# Forked to use with dealyed_job 4. Changed only use_database to use default one!
+
 # CouchRest Model Backend For Delayed Job
 
 ## Installation
@@ -15,4 +17,4 @@ Please note: While this currently works, there are changes/improvements that nee
 
 I mostly copied this from someone who had made a CouchDB Delayed Job Backend prior to version 3.0.  I can't find him or remember his name, but I had this one file stashed on my hard drive.  I would like to give the dude credit, but I can't remember his name/github account.
 
-I just changed a few things here and there to support the new way CouchRest Model does things. 
+I just changed a few things here and there to support the new way CouchRest Model does things.
