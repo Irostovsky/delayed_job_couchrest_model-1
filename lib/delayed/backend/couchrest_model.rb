@@ -1,46 +1,4 @@
 module Delayed
-  class Worker
-
-    def run(job)
-      begin
-        Timeout.timeout(self.class.max_run_time.to_i) { job.invoke_job }
-        job.status       = "Completed"
-        job.completed_at = Time.now
-        job.run_time    += job.completed_at-job.locked_at
-        job.run_at       = nil
-        job.unlock
-        job.clear_failed
-        job.save
-        return true  # Job Succeeded
-      rescue DeserializationError => error
-        job.last_error = "{#{error.message}\n#{error.backtrace.join("\n")}"
-        failed(job)
-      rescue Exception => error
-        self.class.lifecycle.run_callbacks(:error, self, job) { handle_failed_job(job, error) }
-        return false  # Job Failed
-      end
-    end
-
-    def reschedule(job, time = nil)
-      if (job.attempts + 1) <= max_attempts(job)
-        time        ||= job.reschedule_at
-        job.run_time += (Time.now.utc - job.locked_at)
-        job.failed_at = Time.now
-        job.run_at    = time
-        job.status    = "Failed - Rescheduled"
-        job.unlock
-        job.save!
-      else
-        job.run_time += (Time.now.utc - job.locked_at)
-        job.failed_at = Time.now
-        job.run_at    = nil
-        job.status    = "Failed - Attempts Exceeded"
-        job.unlock
-        job.save!
-      end
-    end
-
-  end
   module Backend
     module CouchrestModel
       class Job < CouchRest::Model::Base
